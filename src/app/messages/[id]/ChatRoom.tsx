@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Avatar } from "@/components/Avatar";
+import { EmojiPicker, insertAtCaret } from "@/components/EmojiPicker";
 import type { Message } from "@/lib/chat";
 import type { Person } from "@/lib/friends";
 import { createClient } from "@/lib/supabase/client";
@@ -39,6 +40,7 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastTypingSent = useRef(0);
   const bottomRef = useRef<HTMLLIElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const byId = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
 
   const addMessage = (m: Message) =>
@@ -182,6 +184,7 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
         <label className="flex-1">
           <span className="sr-only">Type a message</span>
           <textarea
+            ref={inputRef}
             value={text}
             onChange={(e) => onType(e.target.value)}
             onKeyDown={(e) => {
@@ -196,6 +199,7 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
             className="w-full resize-none rounded-2xl border border-border bg-background px-4 py-2.5 outline-none focus:border-ring-brand focus:ring-2 focus:ring-ring-brand/25 focus-visible:outline-none"
           />
         </label>
+        <EmojiPicker className="self-center" onPick={(e) => setText((t) => insertAtCaret(inputRef.current, t, e).slice(0, 2000))} />
         <button type="submit" disabled={sending || !text.trim()} className={`${primaryButton} !py-2`}>
           Send
         </button>
