@@ -12,7 +12,7 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 | 1.5 | Orange theme (WCAG AA), groups (create, search, join), text and photo posts with a public home feed | Done |
 | 2 | Feed extras: likes, comments, short videos (up to 60 seconds) | Done |
 | 3 | Friends, 1:1 and group chat in real time, typing indicators, unread markers | Done |
-| 4 | Voice and video calls (LiveKit) | Planned |
+| 4 | 1:1 and group voice and video calls (LiveKit), ringing, missed-call notes | Done |
 
 ## Local setup
 
@@ -22,6 +22,14 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 4. Copy `.env.example` to `.env.local` and fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from **Project Settings > API**.
 5. In Supabase **Authentication > Email Templates > Magic Link**, include `{{ .Token }}` so emails carry the 6-digit code the login screen asks for.
 6. Run `npm run dev` and open http://localhost:3000.
+
+### Turning on voice and video calls
+
+1. Create a free project at [LiveKit Cloud](https://cloud.livekit.io) and copy its URL, API key and secret (**Settings > Keys**).
+2. Set `LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET` on the server (in `.env.local`, and in Vercel's environment variables). The secret never reaches the browser; `/api/calls/[id]/token` signs a 2-hour token only for members of the call's conversation.
+3. Make sure Realtime is on for the `messages` and `calls` tables (the migrations add them to the `supabase_realtime` publication). Calls ring other members through it.
+
+Without these keys the call buttons still show, and the call page explains that calling isn't set up.
 
 ### Turning on phone signup
 
@@ -50,6 +58,7 @@ The brand is an orange-to-rose gradient (`#c2410c` to `#be123c`). White text on 
 - `src/app/p/[id]`: a single post with its comments
 - `src/app/friends`: find people, friend requests, friends list
 - `src/app/messages`: inbox, group chat creation and real-time chat rooms (Supabase Realtime)
+- `src/app/calls/[id]`: the call screen (LiveKit); `src/components/IncomingCall.tsx` rings you anywhere in the app
 - `src/app/groups`: search, create and join groups (signed-in users only)
 - `src/app/page.tsx`: home; everyone sees the latest 50 posts in random order, signed-in users can post
 - `src/lib/supabase`: Supabase clients for the browser, server and proxy
