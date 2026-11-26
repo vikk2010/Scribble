@@ -39,12 +39,12 @@ export default async function PostPage({ params }: PageProps<"/p/[id]">) {
             to join the conversation.
           </p>
         )}
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-3">
           {comments.map((c) => (
-            <li key={c.id} className="flex gap-3">
-              <Avatar name={c.author?.display_name ?? "?"} url={c.author?.avatar_url ?? null} size={32} />
-              <div className="min-w-0 flex-1 rounded-2xl bg-surface px-4 py-2.5">
-                <p className="text-sm">
+            <li key={c.id} className="flex gap-2.5">
+              <Avatar name={c.author?.display_name ?? "?"} url={c.author?.avatar_url ?? null} size={28} />
+              <div className="min-w-0 flex-1 rounded-2xl bg-surface px-3 py-2">
+                <p className="text-xs">
                   {c.author ? (
                     <Link href={`/u/${c.author.username}`} className="font-semibold hover:underline">
                       {c.author.display_name}
@@ -54,7 +54,7 @@ export default async function PostPage({ params }: PageProps<"/p/[id]">) {
                   )}{" "}
                   <span className="text-muted">· {timeAgo(c.created_at)}</span>
                 </p>
-                <p className="whitespace-pre-line">{c.body}</p>
+                <p className="mt-0.5 whitespace-pre-line break-words text-sm leading-snug">{c.body}</p>
               </div>
             </li>
           ))}

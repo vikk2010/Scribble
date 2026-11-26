@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
 import { createPost, type PostFormState } from "@/app/actions/posts";
 import { Avatar } from "@/components/Avatar";
+import { EmojiPicker, insertAtCaret } from "@/components/EmojiPicker";
 import { createClient } from "@/lib/supabase/client";
 import { card, primaryButton, secondaryButton } from "@/lib/ui";
 import { MAX_VIDEO_BYTES, MAX_VIDEO_SECONDS } from "@/lib/validation";
@@ -37,6 +38,7 @@ export function PostComposer({ userId, name, avatarUrl }: Props) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [text, setText] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   // Clear the composer once a post goes through.
   const [lastPosted, setLastPosted] = useState(state.posted);
@@ -85,6 +87,7 @@ export function PostComposer({ userId, name, avatarUrl }: Props) {
         <label className="flex-1">
           <span className="sr-only">What&apos;s on your mind?</span>
           <textarea
+            ref={textRef}
             name="body"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -123,6 +126,7 @@ export function PostComposer({ userId, name, avatarUrl }: Props) {
           <button type="button" onClick={() => fileInput.current?.click()} disabled={uploading} className={secondaryButton}>
             {uploading ? "Uploading…" : "Photo or video"}
           </button>
+          <EmojiPicker onPick={(e) => setText((t) => insertAtCaret(textRef.current, t, e).slice(0, 500))} />
           <input ref={fileInput} type="file" accept="image/*,video/mp4,video/webm,video/quicktime" hidden onChange={onPickFile} />
           <span className="text-sm text-muted" aria-live="polite">
             {text.length}/500
