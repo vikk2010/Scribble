@@ -11,7 +11,7 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 | 1 | Email and phone signup, profiles, avatars, public profile pages | Done |
 | 1.5 | Orange theme (WCAG AA), groups (create, search, topic filters, trending, join), text and photo posts with a public home feed | Done |
 | 2 | Feed extras: likes, comments, short videos (up to 60 seconds) | Done |
-| 3 | Friends, 1:1 and group chat | Planned |
+| 3 | Friends, 1:1 and group chat in real time, typing indicators, unread markers | Done |
 | 4 | Voice and video calls (LiveKit) | Planned |
 
 ## Local setup
@@ -48,6 +48,8 @@ The brand is an orange-to-rose gradient (`#c2410c` to `#be123c`). White text on 
 - `src/app/settings/profile`: edit profile and photo
 - `src/app/u/[username]`: public profile page with the user's posts
 - `src/app/p/[id]`: a single post with its comments
+- `src/app/friends`: find people, friend requests, friends list
+- `src/app/messages`: inbox, group chat creation and real-time chat rooms (Supabase Realtime)
 - `src/app/groups`: search, create and join groups (signed-in users only)
 - `src/app/page.tsx`: home; everyone sees the latest 50 posts in random order, signed-in users can post
 - `src/lib/supabase`: Supabase clients for the browser, server and proxy
