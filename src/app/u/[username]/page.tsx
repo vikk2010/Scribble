@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { PostCard } from "@/components/PostCard";
+import { FriendButton } from "@/components/FriendButton";
+import { getFriendState } from "@/lib/friends";
 import { getPostsByAuthor } from "@/lib/posts";
 import { getCurrentUserId, getProfileByUsername } from "@/lib/profiles";
 import { secondaryButton } from "@/lib/ui";
@@ -20,7 +22,10 @@ export default async function ProfilePage({ params }: PageProps<"/u/[username]">
   const { username } = await params;
   const [profile, viewerId] = await Promise.all([getProfileByUsername(username), getCurrentUserId()]);
   if (!profile) notFound();
-  const posts = await getPostsByAuthor(profile.id, viewerId);
+  const [posts, friendState] = await Promise.all([
+    getPostsByAuthor(profile.id, viewerId),
+    getFriendState(viewerId, profile.id),
+  ]);
   const isMe = viewerId === profile.id;
   const joined = new Date(profile.created_at).toLocaleDateString("en", { month: "long", year: "numeric" });
 
@@ -35,7 +40,9 @@ export default async function ProfilePage({ params }: PageProps<"/u/[username]">
               <Link href="/settings/profile" className={secondaryButton}>
                 Edit profile
               </Link>
-            ) : null}
+            ) : (
+              <FriendButton state={friendState} userId={profile.id} username={profile.username} signedIn={Boolean(viewerId)} />
+            )}
           </div>
           <div>
             <h1 className="text-2xl font-semibold">{profile.display_name}</h1>
