@@ -16,14 +16,18 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   if (await getCurrentUserId()) redirect(next);
 
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-6 py-12">
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold">Welcome to Scribble</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Log in or sign up with your {phoneAuthEnabled ? "email or phone number" : "email"}.
-        </p>
+    <main className="bg-hero-glow flex w-full flex-1 flex-col justify-center px-6 py-12">
+      <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold">
+            Welcome to <span className="text-brand-gradient">Scribble</span>
+          </h1>
+          <p className="mt-1 text-sm text-muted">
+            Log in or sign up with your {phoneAuthEnabled ? "email or phone number" : "email"}.
+          </p>
+        </div>
+        <LoginForm phoneEnabled={phoneAuthEnabled} next={next} />
       </div>
-      <LoginForm phoneEnabled={phoneAuthEnabled} next={next} />
     </main>
   );
 }

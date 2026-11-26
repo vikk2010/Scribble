@@ -48,7 +48,7 @@ export function ProfileForm({ mode, userId, initial }: Props) {
       <input type="hidden" name="avatarUrl" value={avatarUrl} />
 
       <div className="flex items-center gap-4">
-        <div className="relative h-20 w-20 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
+        <div className="relative h-20 w-20 overflow-hidden rounded-full bg-brand-gradient">
           {avatarUrl ? (
             <Image src={avatarUrl} alt="Your profile photo" fill sizes="80px" className="object-cover" />
           ) : null}
@@ -62,7 +62,7 @@ export function ProfileForm({ mode, userId, initial }: Props) {
           >
             {uploading ? "Uploading…" : avatarUrl ? "Change photo" : "Add photo"}
           </button>
-          {uploadError ? <p className="text-sm text-red-600">{uploadError}</p> : null}
+          {uploadError ? <p className="text-sm text-red-700 dark:text-red-400">{uploadError}</p> : null}
           <input ref={fileInput} type="file" accept="image/*" hidden onChange={onPickAvatar} />
         </div>
       </div>
@@ -73,7 +73,7 @@ export function ProfileForm({ mode, userId, initial }: Props) {
 
       <Field label="Username" error={err.username} hint="3 to 20 letters, numbers or underscores">
         <div className="flex items-center">
-          <span className="mr-1 text-neutral-500">@</span>
+          <span className="mr-1 text-muted">@</span>
           <input
             name="username"
             defaultValue={initial?.username}
@@ -90,8 +90,8 @@ export function ProfileForm({ mode, userId, initial }: Props) {
         <textarea name="bio" defaultValue={initial?.bio} maxLength={160} rows={3} className={inputClass} />
       </Field>
 
-      {state.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
-      {state.saved ? <p className="text-sm text-green-600">Profile saved.</p> : null}
+      {state.error ? <p className="text-sm text-red-700 dark:text-red-400">{state.error}</p> : null}
+      {state.saved ? <p className="text-sm text-green-700 dark:text-green-400">Profile saved.</p> : null}
 
       <button type="submit" disabled={pending || uploading} className={primaryButton}>
         {pending ? "Saving…" : mode === "onboarding" ? "Create profile" : "Save changes"}
@@ -106,9 +106,9 @@ function Field(props: { label: string; error?: string; hint?: string; children: 
       <span className="text-sm font-medium">{props.label}</span>
       {props.children}
       {props.error ? (
-        <span className="text-sm text-red-600">{props.error}</span>
+        <span className="text-sm text-red-700 dark:text-red-400">{props.error}</span>
       ) : props.hint ? (
-        <span className="text-xs text-neutral-500">{props.hint}</span>
+        <span className="text-xs text-muted">{props.hint}</span>
       ) : null}
     </label>
   );
