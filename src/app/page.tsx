@@ -10,7 +10,8 @@ import { primaryButton, secondaryButton } from "@/lib/ui";
 export default async function Home() {
   if (!isSupabaseConfigured) return <SetupNotice />;
 
-  const [{ userId, profile }, posts] = await Promise.all([getMyProfile(), getLatestPostsShuffled()]);
+  const { userId, profile } = await getMyProfile();
+  const posts = await getLatestPostsShuffled(userId);
   if (userId && !profile) redirect("/onboarding");
 
   return (
@@ -44,7 +45,7 @@ export default async function Home() {
           Latest posts
         </h2>
         {posts.length ? (
-          posts.map((post) => <PostCard key={post.id} post={post} />)
+          posts.map((post) => <PostCard key={post.id} post={post} signedIn={Boolean(userId)} />)
         ) : (
           <p className="rounded-2xl border border-dashed border-border p-10 text-center text-muted">
             No posts yet. {profile ? "Write the first one above." : "Join to write the first one."}

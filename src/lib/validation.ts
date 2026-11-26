@@ -28,6 +28,13 @@ export const postSchema = z.object({
   body: z.string().trim().max(500, "Posts can be up to 500 characters."),
 });
 
+export const commentSchema = z.object({
+  body: z.string().trim().min(1, "Write a comment first.").max(300, "Comments can be up to 300 characters."),
+});
+
+export const MAX_VIDEO_SECONDS = 60;
+export const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+
 export const groupSchema = z.object({
   name: z.string().trim().min(3, "Use at least 3 characters.").max(50, "Keep it under 50 characters."),
   description: z.string().trim().max(300, "Keep it under 300 characters.").default(""),
