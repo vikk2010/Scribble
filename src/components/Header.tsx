@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOut } from "@/app/actions/profile";
 import { Avatar } from "@/components/Avatar";
+import { IncomingCall } from "@/components/IncomingCall";
 import { getMyProfile } from "@/lib/profiles";
 import { isSupabaseConfigured } from "@/lib/env";
 import { primaryButton } from "@/lib/ui";
@@ -58,6 +59,7 @@ export async function Header() {
           </div>
         </nav>
       </header>
+      {userId ? <IncomingCall me={userId} /> : null}
       {userId ? (
         <nav
           aria-label="Main (mobile)"
