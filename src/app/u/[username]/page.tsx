@@ -20,7 +20,7 @@ export default async function ProfilePage({ params }: PageProps<"/u/[username]">
   const { username } = await params;
   const [profile, viewerId] = await Promise.all([getProfileByUsername(username), getCurrentUserId()]);
   if (!profile) notFound();
-  const posts = await getPostsByAuthor(profile.id);
+  const posts = await getPostsByAuthor(profile.id, viewerId);
   const isMe = viewerId === profile.id;
   const joined = new Date(profile.created_at).toLocaleDateString("en", { month: "long", year: "numeric" });
 
@@ -49,7 +49,7 @@ export default async function ProfilePage({ params }: PageProps<"/u/[username]">
 
         <section className="mt-8 flex flex-col gap-4 pb-12">
           {posts.length ? (
-            posts.map((post) => <PostCard key={post.id} post={post} />)
+            posts.map((post) => <PostCard key={post.id} post={post} signedIn={Boolean(viewerId)} />)
           ) : (
             <p className="rounded-2xl border border-dashed border-border p-10 text-center text-muted">No posts yet.</p>
           )}
