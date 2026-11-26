@@ -55,7 +55,7 @@ export function LoginForm({ phoneEnabled, next }: { phoneEnabled: boolean; next:
   if (sentTo) {
     return (
       <form onSubmit={verifyCode} className="flex flex-col gap-4">
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-sm text-muted">
           We sent a code to <strong>{sentTo}</strong>. Enter it below.
         </p>
         <input
@@ -68,7 +68,7 @@ export function LoginForm({ phoneEnabled, next }: { phoneEnabled: boolean; next:
           className={`${inputClass} text-center text-2xl tracking-[0.4em]`}
           autoFocus
         />
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
+        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         <button type="submit" disabled={busy} className={primaryButton}>
           {busy ? "Checking…" : "Continue"}
         </button>
@@ -79,7 +79,7 @@ export function LoginForm({ phoneEnabled, next }: { phoneEnabled: boolean; next:
             setCode("");
             setError(null);
           }}
-          className="text-sm text-neutral-500 hover:underline"
+          className="text-sm text-muted hover:underline"
         >
           Use a different {method === "email" ? "email" : "number"}
         </button>
@@ -90,7 +90,7 @@ export function LoginForm({ phoneEnabled, next }: { phoneEnabled: boolean; next:
   return (
     <form onSubmit={sendCode} className="flex flex-col gap-4">
       {phoneEnabled ? (
-        <div role="tablist" className="grid grid-cols-2 rounded-full bg-neutral-100 p-1 text-sm dark:bg-neutral-900">
+        <div role="tablist" className="grid grid-cols-2 rounded-full bg-surface p-1 text-sm">
           {(["email", "phone"] as const).map((m) => (
             <button
               key={m}
@@ -102,7 +102,7 @@ export function LoginForm({ phoneEnabled, next }: { phoneEnabled: boolean; next:
                 setIdentifier("");
                 setError(null);
               }}
-              className={`rounded-full py-1.5 font-medium ${method === m ? "bg-white shadow dark:bg-neutral-800" : "text-neutral-500"}`}
+              className={`rounded-full py-1.5 font-medium ${method === m ? "bg-background shadow text-brand" : "text-muted"}`}
             >
               {m === "email" ? "Email" : "Phone"}
             </button>
@@ -123,11 +123,11 @@ export function LoginForm({ phoneEnabled, next }: { phoneEnabled: boolean; next:
           required
         />
       </label>
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
       <button type="submit" disabled={busy} className={primaryButton}>
         {busy ? "Sending…" : "Send code"}
       </button>
-      <p className="text-center text-xs text-neutral-500">
+      <p className="text-center text-xs text-muted">
         New here? The same code creates your account.
       </p>
     </form>

@@ -1,6 +1,8 @@
 export const inputClass =
-  "w-full rounded-lg border border-neutral-300 bg-transparent px-3 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 dark:border-neutral-700";
+  "w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-ring-brand focus:ring-2 focus:ring-ring-brand/25";
 export const primaryButton =
-  "rounded-full bg-violet-600 px-5 py-2.5 font-medium text-white hover:bg-violet-700 disabled:opacity-50";
+  "inline-flex items-center justify-center rounded-full bg-brand-gradient px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-brand-gradient-hover disabled:opacity-60";
 export const secondaryButton =
-  "rounded-full border border-neutral-300 px-4 py-1.5 text-sm font-medium hover:bg-neutral-100 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-900";
+  "inline-flex items-center justify-center rounded-full border border-border px-4 py-1.5 text-sm font-medium hover:bg-surface disabled:opacity-60";
+export const mutedText = "text-muted";
+export const card = "rounded-2xl border border-border bg-background";

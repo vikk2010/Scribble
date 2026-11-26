@@ -13,7 +13,7 @@ export default async function OnboardingPage() {
   return (
     <main className="mx-auto w-full max-w-md flex-1 px-6 py-12">
       <h1 className="text-2xl font-semibold">Create your profile</h1>
-      <p className="mb-8 mt-1 text-sm text-neutral-500">This is how friends will find you on Scribble.</p>
+      <p className="mb-8 mt-1 text-sm text-muted">This is how friends will find you on Scribble.</p>
       <ProfileForm mode="onboarding" userId={userId} />
     </main>
   );

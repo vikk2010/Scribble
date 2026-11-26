@@ -8,8 +8,9 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 1 | Email and phone signup, profiles, avatars, public profile pages | In progress |
-| 2 | Public feed: text, image and short video posts, likes, comments | Planned |
+| 1 | Email and phone signup, profiles, avatars, public profile pages | Done |
+| 1.5 | Orange theme (WCAG AA), groups (create, search, topic filters, trending, join), text and photo posts with a public home feed | Done |
+| 2 | Feed extras: likes, comments, short videos | Planned |
 | 3 | Friends, 1:1 and group chat | Planned |
 | 4 | Voice and video calls (LiveKit) | Planned |
 
@@ -17,7 +18,7 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 
 1. Install Node.js 22 and run `npm install`.
 2. Create a free project at [supabase.com](https://supabase.com).
-3. Apply the database migration in `supabase/migrations/` (paste it into the Supabase SQL editor, or run `supabase db push` with the Supabase CLI).
+3. Apply the database migrations in `supabase/migrations/` in order (paste it into the Supabase SQL editor, or run `supabase db push` with the Supabase CLI).
 4. Copy `.env.example` to `.env.local` and fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from **Project Settings > API**.
 5. In Supabase **Authentication > Email Templates > Magic Link**, include `{{ .Token }}` so emails carry the 6-digit code the login screen asks for.
 6. Run `npm run dev` and open http://localhost:3000.
@@ -28,6 +29,10 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 2. Set `NEXT_PUBLIC_PHONE_AUTH_ENABLED=true` and restart. The login screen then shows Email and Phone tabs.
 
 SMS codes cost money per message, so phone is off by default.
+
+## Design and accessibility
+
+The brand is an orange-to-rose gradient (`#c2410c` to `#be123c`). White text on it is at least 5.18:1 and brand text on white is 5.18:1, so both meet WCAG 2.1 AA. Dark mode uses lighter tints (`#fb923c`, `#fb7185`). Colors live as CSS variables in `src/app/globals.css`, with the contrast ratios noted next to them.
 
 ## Scripts
 
@@ -41,7 +46,9 @@ SMS codes cost money per message, so phone is off by default.
 - `src/app/login`: email or phone one-time-code login and signup
 - `src/app/onboarding`: first-time profile setup
 - `src/app/settings/profile`: edit profile and photo
-- `src/app/u/[username]`: public profile page
+- `src/app/u/[username]`: public profile page with the user's posts
+- `src/app/groups`: search, create and join groups (signed-in users only)
+- `src/app/page.tsx`: home; everyone sees the latest 50 posts in random order, signed-in users can post
 - `src/lib/supabase`: Supabase clients for the browser, server and proxy
 - `src/proxy.ts`: refreshes the session and guards signed-in pages
 - `supabase/migrations`: database schema and row-level security policies

@@ -15,7 +15,7 @@ export default async function EditProfilePage() {
     <main className="mx-auto w-full max-w-md flex-1 px-6 py-12">
       <div className="mb-8 flex items-baseline justify-between">
         <h1 className="text-2xl font-semibold">Edit profile</h1>
-        <Link href={`/u/${profile.username}`} className="text-sm text-violet-600 hover:underline">
+        <Link href={`/u/${profile.username}`} className="text-sm font-medium text-brand hover:underline">
           View profile
         </Link>
       </div>
