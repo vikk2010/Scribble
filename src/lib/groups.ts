@@ -89,7 +89,7 @@ export function trending(groups: GroupSummary[], count = 3): GroupSummary[] {
 
 export type GroupDetail = GroupSummary & {
   createdBy: string;
-  members: { username: string; display_name: string; avatar_url: string | null; role: string }[];
+  members: { id: string; username: string; display_name: string; avatar_url: string | null; role: string }[];
 };
 
 export async function getGroupBySlug(slug: string, userId: string): Promise<GroupDetail | null> {
@@ -103,11 +103,11 @@ export async function getGroupBySlug(slug: string, userId: string): Promise<Grou
   const [summary] = await hydrate([data], userId);
   const { data: members } = await supabase
     .from("group_members")
-    .select("role, profile:profiles!group_members_user_id_fkey(username, display_name, avatar_url)")
+    .select("role, profile:profiles!group_members_user_id_fkey(id, username, display_name, avatar_url)")
     .eq("group_id", data.id)
     .order("joined_at", { ascending: true })
-    .limit(48)
-    .returns<{ role: string; profile: { username: string; display_name: string; avatar_url: string | null } | null }[]>();
+    .limit(200)
+    .returns<{ role: string; profile: { id: string; username: string; display_name: string; avatar_url: string | null } | null }[]>();
   return {
     ...summary,
     createdBy: data.created_by,

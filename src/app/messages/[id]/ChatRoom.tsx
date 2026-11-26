@@ -10,7 +10,11 @@ import { createClient } from "@/lib/supabase/client";
 import { primaryButton } from "@/lib/ui";
 
 type Props = {
+  /** The conversation id, or the group id when source is "group". */
   conversationId: string;
+  /** Where messages live: private conversations (default) or a group's chat. */
+  source?: "conversation" | "group";
+  className?: string;
   me: string;
   isGroup: boolean;
   members: Person[];
@@ -30,7 +34,9 @@ function formatDay(iso: string) {
   return d.toLocaleDateString("en", { weekday: "short", day: "numeric", month: "short" });
 }
 
-export function ChatRoom({ conversationId, me, isGroup, members, initialMessages }: Props) {
+export function ChatRoom({ conversationId, source = "conversation", className, me, isGroup, members, initialMessages }: Props) {
+  const table = source === "group" ? "group_messages" : "messages";
+  const parentColumn = source === "group" ? "group_id" : "conversation_id";
   const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [text, setText] = useState("");
@@ -40,6 +46,7 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastTypingSent = useRef(0);
   const bottomRef = useRef<HTMLLIElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const byId = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
 
@@ -49,10 +56,10 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
   // Live updates: new messages via Postgres changes, typing via broadcast.
   useEffect(() => {
     const channel = supabase
-      .channel(`chat:${conversationId}`)
+      .channel(`${source}-chat:${conversationId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
+        { event: "INSERT", schema: "public", table, filter: `${parentColumn}=eq.${conversationId}` },
         (payload) => {
           const m = payload.new as Message;
           addMessage(m);
@@ -73,7 +80,7 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
       channelRef.current = null;
       supabase.removeChannel(channel);
     };
-  }, [supabase, conversationId, me]);
+  }, [supabase, conversationId, me, source, table, parentColumn]);
 
   // Drop typing indicators after 4 seconds of silence.
   useEffect(() => {
@@ -90,13 +97,16 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
   // Keep the newest message in view and mark the chat as read.
   const lastId = messages.at(-1)?.id;
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ block: "end" });
+    const list = listRef.current;
+    if (list && list.scrollHeight > list.clientHeight) list.scrollTop = list.scrollHeight;
+    else if (source === "conversation") bottomRef.current?.scrollIntoView({ block: "end" });
+    if (source !== "conversation") return;
     void supabase
       .from("conversation_members")
       .update({ last_read_at: new Date().toISOString() })
       .eq("conversation_id", conversationId)
       .eq("user_id", me);
-  }, [lastId, supabase, conversationId, me]);
+  }, [lastId, supabase, conversationId, me, source]);
 
   function onType(value: string) {
     setText(value);
@@ -114,8 +124,8 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
     setSending(true);
     setError(null);
     const { data, error } = await supabase
-      .from("messages")
-      .insert({ conversation_id: conversationId, sender_id: me, body })
+      .from(table)
+      .insert({ [parentColumn]: conversationId, sender_id: me, body })
       .select("id, body, sender_id, created_at")
       .single<Message>();
     setSending(false);
@@ -129,8 +139,8 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
     .filter(Boolean);
 
   return (
-    <div className="flex min-h-[60vh] flex-1 flex-col">
-      <ol aria-label="Messages" aria-live="polite" className="flex flex-1 flex-col gap-1 overflow-y-auto py-4">
+    <div className={className ?? "flex min-h-[60vh] flex-1 flex-col"}>
+      <ol ref={listRef} tabIndex={0} aria-label="Messages" aria-live="polite" className="flex flex-1 flex-col gap-1 overflow-y-auto py-4">
         {messages.length === 0 ? (
           <li className="m-auto text-center text-muted">No messages yet. Say hello!</li>
         ) : null}
@@ -180,7 +190,10 @@ export function ChatRoom({ conversationId, me, isGroup, members, initialMessages
         {typingNames.length ? `${typingNames.join(", ")} ${typingNames.length === 1 ? "is" : "are"} typing…` : ""}
       </p>
       {error ? <p role="alert" className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
-      <form onSubmit={send} className="sticky bottom-16 flex gap-2 border-t border-border bg-background py-3 sm:bottom-0">
+      <form
+        onSubmit={send}
+        className={`flex gap-2 border-t border-border bg-background py-3 ${source === "conversation" ? "sticky bottom-16 sm:bottom-0" : ""}`}
+      >
         <label className="flex-1">
           <span className="sr-only">Type a message</span>
           <textarea

@@ -4,8 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { MembershipButton, TopicChip } from "@/components/GroupCard";
 import { getGroupBySlug } from "@/lib/groups";
+import { isCallingConfigured } from "@/lib/env";
 import { getCurrentUserId } from "@/lib/profiles";
+import { getGroupMessages, getSpeakerIds } from "@/lib/rooms";
 import { coverStyle, TOPICS } from "@/lib/topics";
+import { ChatRoom } from "@/app/messages/[id]/ChatRoom";
+import { VoiceRoom } from "./VoiceRoom";
 
 export const metadata: Metadata = { title: "Group" };
 
@@ -16,6 +20,10 @@ export default async function GroupPage({ params }: PageProps<"/groups/[slug]">)
   const group = await getGroupBySlug(slug, userId);
   if (!group) notFound();
   const t = TOPICS[group.topic];
+  const [initialMessages, speakers] = group.joined
+    ? await Promise.all([getGroupMessages(group.id), getSpeakerIds(group.id)])
+    : [[], []];
+  const people = group.members.map(({ id, username, display_name, avatar_url }) => ({ id, username, display_name, avatar_url }));
   const created = new Date(group.createdAt).toLocaleDateString("en", { month: "long", year: "numeric" });
 
   return (
@@ -52,6 +60,41 @@ export default async function GroupPage({ params }: PageProps<"/groups/[slug]">)
           </div>
           {group.description ? <p className="mt-4 whitespace-pre-line">{group.description}</p> : null}
         </section>
+
+        {group.joined ? (
+          <div className="mt-8 grid gap-6">
+            <VoiceRoom
+              groupId={group.id}
+              slug={group.slug}
+              me={userId}
+              isOwner={group.createdBy === userId}
+              members={people}
+              initialSpeakers={speakers}
+              voiceEnabled={isCallingConfigured}
+            />
+            <section aria-labelledby="group-chat" className="overflow-hidden rounded-3xl border border-border bg-background shadow-sm">
+              <h2 id="group-chat" className="flex items-center gap-2 border-b border-border px-5 py-3 text-lg font-semibold">
+                <span aria-hidden>💬</span> Group chat
+              </h2>
+              <ChatRoom
+                source="group"
+                conversationId={group.id}
+                me={userId}
+                isGroup
+                members={people}
+                initialMessages={initialMessages}
+                className="flex h-[460px] flex-col px-4"
+              />
+            </section>
+          </div>
+        ) : (
+          <section className="mt-8 rounded-3xl border border-dashed border-border p-6 text-center">
+            <p className="text-lg font-semibold">
+              <span aria-hidden>🎙️💬</span> Join to talk and chat
+            </p>
+            <p className="mt-1 text-sm text-muted">Members get a live voice room with 5 seats on stage and a group chat.</p>
+          </section>
+        )}
 
         <section aria-labelledby="members" className="py-8">
           <h2 id="members" className="mb-4 text-lg font-semibold">

@@ -13,6 +13,7 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 | 2 | Feed extras: likes, comments, short videos (up to 60 seconds) | Done |
 | 3 | Friends, 1:1 and group chat in real time, typing indicators, unread markers | Done |
 | 4 | 1:1 and group voice and video calls (LiveKit), ringing, missed-call notes | Done |
+| 5 | Group chat and live voice rooms: 5 speaker seats on stage, everyone else listens and chats | Done |
 
 ## Local setup
 
@@ -30,6 +31,12 @@ Built with Next.js 16 (App Router, TypeScript, Tailwind CSS) and Supabase (auth,
 3. Make sure Realtime is on for the `messages` and `calls` tables (the migrations add them to the `supabase_realtime` publication). Calls ring other members through it.
 
 Without these keys the call buttons still show, and the call page explains that calling isn't set up.
+
+### Group voice rooms
+
+Every group has a group chat and a voice room. Up to 5 members sit on stage and talk; everyone else in the group joins as a listener and uses the chat. The database enforces the 5-seat limit (`group_room_speakers` trigger), and `/api/groups/[slug]/room-token` only gives microphone permission to people holding a seat. Taking or leaving a seat reconnects you with the right permission. Speakers get a glowing ring while they talk, and the group owner can move someone off the stage.
+
+The group chat works without LiveKit. Voice needs the same three LiveKit variables as calls. Run the `20261126060000_group_chat_voice_rooms.sql` migration after pulling.
 
 ### Turning on phone signup
 
@@ -59,7 +66,7 @@ The brand is an orange-to-rose gradient (`#c2410c` to `#be123c`). White text on 
 - `src/app/friends`: find people, friend requests, friends list
 - `src/app/messages`: inbox, group chat creation and real-time chat rooms (Supabase Realtime)
 - `src/app/calls/[id]`: the call screen (LiveKit); `src/components/IncomingCall.tsx` rings you anywhere in the app
-- `src/app/groups`: search, create and join groups (signed-in users only)
+- `src/app/groups`: search, create and join groups (signed-in users only); `groups/[slug]/VoiceRoom.tsx` is the stage and listener room
 - `src/app/page.tsx`: home; everyone sees the latest 50 posts in random order, signed-in users can post
 - `src/lib/supabase`: Supabase clients for the browser, server and proxy
 - `src/proxy.ts`: refreshes the session and guards signed-in pages
