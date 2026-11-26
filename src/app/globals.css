@@ -75,7 +75,10 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
+/* In the base layer so utilities such as focus-visible:outline-none can override it. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
