@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isTopic } from "@/lib/topics";
 import { groupSchema, slugify } from "@/lib/validation";
 
 export type GroupFormState = {
@@ -33,6 +34,9 @@ export async function createGroup(_prev: GroupFormState, formData: FormData): Pr
     return { fieldErrors };
   }
 
+  const rawTopic = formData.get("topic");
+  const topic = isTopic(rawTopic) ? rawTopic : null;
+
   let base = slugify(parsed.data.name);
   if (base.length < 3) base = `group-${base}`.replace(/-+$/, "");
 
@@ -41,7 +45,7 @@ export async function createGroup(_prev: GroupFormState, formData: FormData): Pr
     const slug = attempt === 0 ? base : `${base}-${Math.random().toString(36).slice(2, 6)}`;
     const { error } = await supabase
       .from("groups")
-      .insert({ slug, name: parsed.data.name, description: parsed.data.description, created_by: userId });
+      .insert({ slug, name: parsed.data.name, description: parsed.data.description, topic, created_by: userId });
     if (!error) {
       revalidatePath("/groups");
       redirect(`/groups/${slug}`);
